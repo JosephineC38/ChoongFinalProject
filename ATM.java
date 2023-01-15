@@ -3,7 +3,7 @@ public class ATM {
     Scanner scan = new Scanner(System.in);
     Customer customer = new Customer();
     Account checking = new Account("checking");
-    Account saving = new Account("saving");
+    Account savings = new Account("savings");
 
     private String decision;
     private int id;
@@ -92,23 +92,47 @@ public class ATM {
         } while (!quit);
     }
 
-
+    /**
+     * Withdraw money from an account
+     * Used in menu() for Choice 1 "Withdraw money".
+     */
+private void withdrawMoneyy() {
+    System.out.println("(1) Savings Account \n(2) Checking Account");
+    System.out.print("WITHDRAW: ");
+    int choice = scan.nextInt();
+    while (choice != 1 && choice != 2) {
+        System.out.print("Invalid choice. Please either pick from: \n(1) Savings Account \n(2) Checking Account \nFROM: ");
+        choice = scan.nextInt();
+    }
+    if (choice == 1) {
+        currentAccount = savings;
+        System.out.println("You chose the checking account.");
+    } else {
+        currentAccount = checking;
+        System.out.println("You chose the saving account.");
+    }
+    System.out.println("You can only withdraw $5 and $20 bills");
+    System.out.print("How much would you like to withdraw: ");
+    double withdraw = scan.nextDouble();
+    while(withdraw % 5 != 0) {
+        System.out.println("Invalid amount. Please only withdraw a multiple of 5.");
+        System.out.print("How much would you like to withdraw: ");
+        withdraw = scan.nextDouble();
+    }
+    if(currentAccount.getBalance() - withdraw < 0) {
+        successfulAction = false;
+        printReceipt();
+    }
+}
 /**
      * Deposits money into an account
      * Used in menu() for Choice 2 "Deposit money".
      */
    private void depositMoney() {
      System.out.print("(1) Checking \n(2) Savings \nWhat account would you like to deposit into: ");
+     chooseAccount();
+     System.out.print("What amount would you like to deposit: ");
      double choice = scan.nextDouble();
-     if(choice == 1) {
-         System.out.println("You chose the checking account.");
-         currentAccount = checking;
-     } else if (choice == 2) {
-         System.out.println("You chose the saving account.");
-         currentAccount = saving;
-     }
-     System.out.print("What amount would you like to desposit: ");
-     choice = scan.nextDouble();
      depositAmount = choice;
      currentAccount.addBalance(depositAmount);
      receipt = 2;
@@ -122,32 +146,22 @@ public class ATM {
    private void transferMoney() {
      System.out.println("(1) Savings Account \n(2) Checking Account");
      System.out.print("FROM: ");
-     int choice = scan.nextInt();
-     while (choice != 1 && choice != 2) {
-         System.out.print("Invalid choice. Please either pick from: \n(1) Savings Account \n(2) Checking Account \nFROM: ");
-         choice = scan.nextInt();
-     }
-     if (choice == 1) {
-         currentAccount = saving;
-         System.out.println("FROM: Savings Account \nTO: Checking Account");
-     } else {
-         currentAccount = checking;
-         System.out.println("FROM: Checking Account \nTO: Savings Account");
-     }
+     chooseAccount();
      System.out.print("Enter the amount of money you would like transfer: ");
      double transfer = scan.nextDouble();
      if (currentAccount.getBalance() - transfer < 0) {
          successfulAction = false;
-         receipt();
      } else {
-         if(currentAccount == saving) {
-             saving.subtractBalance(transfer);
+         if(currentAccount == savings) {
+             savings.subtractBalance(transfer);
              checking.addBalance(transfer);
          } else if (currentAccount == checking) {
              checking.subtractBalance(transfer);
-             saving.addBalance(transfer);
+             savings.addBalance(transfer);
          }
      }
+     receipt = 3;
+     printReceipt();
 
    }
 
@@ -156,7 +170,7 @@ public class ATM {
      * Used in menu() for Choice 4 "Get account balances".
      */
     private void getAccountBalance() {
-        System.out.println("----------\nSavings Account: " + saving.getBalance() +
+        System.out.println("----------\nSavings Account: " + savings.getBalance() +
                 "\nChecking Account: " + checking.getBalance() + "\n----------");
         returnMenu();
     }
@@ -192,21 +206,26 @@ public class ATM {
         System.out.println("----");
         System.out.println("Account Transaction: " + id);
         if(receipt ==  2) {
+            System.out.println("\n-");
+            if(currentAccount.getName().equals(savings)) {
+                System.out.println("Savings Account: " + savings.getBalance());
+            } else {
+                System.out.println("Checking Account: " + checking.getBalance());
+            }
             System.out.println("  - Deposited $" + depositAmount + " into " + currentAccount.getName());
             System.out.println("  - Action was successful");
-        }
-        if(receipt == 3) {
+        } else if (receipt == 3) {
             if(successfulAction) {
-                System.out.println("----------\nSavings Account: " + saving.getBalance() +
-                        "\nChecking Account: " + checking.getBalance() + "\n----------");
+                System.out.println("Savings Account: " + savings.getBalance() +
+                        "\nChecking Account: " + checking.getBalance());
+                System.out.println("  - Action was successful");
             } else {
                 System.out.println("You do not have enough money in your account to withdraw that amount");
-                System.out.println("----------\nSavings Account: " + saving.getBalance() +
-                        "\nChecking Account: " + checking.getBalance() + "\n----------");
+                System.out.println("Savings Account: " + savings.getBalance() +
+                        "\nChecking Account: " + checking.getBalance());
             }
 
-        }
-        if(receipt == 5) {
+        } else if (receipt == 5) {
             System.out.println("  - Changed PIN. The new PIN is " + customer.getPin() + ".");
             System.out.println("  - Action was successful.");
         }
@@ -242,6 +261,22 @@ public class ATM {
             System.out.println("Thank you for being a customer at New York Bank. Come again!");
         }
     }
+
+    private void chooseAccount() {
+        int choice = scan.nextInt();
+        while (choice != 1 && choice != 2) {
+            System.out.print("Invalid choice. Please either pick from: \n(1) Savings Account \n(2) Checking Account \nFROM: ");
+            choice = scan.nextInt();
+        }
+        if (choice == 1) {
+            currentAccount = savings;
+            System.out.println("FROM: Savings Account \nTO: Checking Account");
+        } else {
+            currentAccount = checking;
+            System.out.println("FROM: Checking Account \nTO: Savings Account");
+        }
+    }
+
 
 
 }
