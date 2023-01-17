@@ -7,7 +7,7 @@ public class ATM {
 
     private String decision;
     private int id;
-    private double depositAmount;
+    private double moneyChange;
     private Account currentAccount;
     private boolean successfulAction;
 
@@ -77,7 +77,7 @@ public class ATM {
                     quit = true;
                     break;
                 case "6":
-                    System.out.println("Thank you for being a customer at New York Bank. Come again!");
+                    System.out.println("Thank you for being a customer at New York Bank " + customer.getName() + ". Come again!");
                     quit = true;
                     break;
                 default:
@@ -96,21 +96,9 @@ public class ATM {
      * Withdraw money from an account
      * Used in menu() for Choice 1 "Withdraw money".
      */
-private void withdrawMoneyy() {
-    System.out.println("(1) Savings Account \n(2) Checking Account");
+private void withdrawMoney() {
     System.out.print("WITHDRAW: ");
-    int choice = scan.nextInt();
-    while (choice != 1 && choice != 2) {
-        System.out.print("Invalid choice. Please either pick from: \n(1) Savings Account \n(2) Checking Account \nFROM: ");
-        choice = scan.nextInt();
-    }
-    if (choice == 1) {
-        currentAccount = savings;
-        System.out.println("You chose the checking account.");
-    } else {
-        currentAccount = checking;
-        System.out.println("You chose the saving account.");
-    }
+    chooseAccount();
     System.out.println("You can only withdraw $5 and $20 bills");
     System.out.print("How much would you like to withdraw: ");
     double withdraw = scan.nextDouble();
@@ -133,8 +121,8 @@ private void withdrawMoneyy() {
      chooseAccount();
      System.out.print("What amount would you like to deposit: ");
      double choice = scan.nextDouble();
-     depositAmount = choice;
-     currentAccount.addBalance(depositAmount);
+     moneyChange = choice;
+     currentAccount.addBalance(moneyChange);
      receipt = 2;
      printReceipt();
    }
@@ -160,6 +148,7 @@ private void withdrawMoneyy() {
              savings.addBalance(transfer);
          }
      }
+     moneyChange = transfer;
      receipt = 3;
      printReceipt();
 
@@ -185,12 +174,18 @@ private void withdrawMoneyy() {
         System.out.print("Enter your new PIN: ");
         int pin = scan.nextInt();
         String strPin = Integer.toString(pin);
-        while (strPin.length() != 4) {
-            System.out.println("Your PIN isn't 4 numbers. Please try again.");
+        while (strPin.length() != 4 || pin == customer.getPin()) {
+            if(strPin.length() != 4 ) {
+                System.out.println("Your PIN isn't 4 numbers. Please try again.");
+            } else {
+                System.out.println("Your PIN is the same as your previous PIN. Please try again.");
+            }
             System.out.print("What is your PIN: ");
             pin = scan.nextInt();
             strPin = Integer.toString(pin);
+
         }
+
         customer.setPin(pin);
         receipt = 5;
         printReceipt();
@@ -201,7 +196,7 @@ private void withdrawMoneyy() {
      */
     private void printReceipt() {
         id++;
-        System.out.println("----------");
+        System.out.println("--------------------");
         System.out.println("Receipt");
         System.out.println("----");
         System.out.println("Account Transaction: " + id);
@@ -212,24 +207,25 @@ private void withdrawMoneyy() {
             } else {
                 System.out.println("Checking Account: " + checking.getBalance());
             }
-            System.out.println("  - Deposited $" + depositAmount + " into " + currentAccount.getName());
+            System.out.println("  - Deposited $" + moneyChange + " into " + currentAccount.getName());
             System.out.println("  - Action was successful");
         } else if (receipt == 3) {
             if(successfulAction) {
                 System.out.println("Savings Account: " + savings.getBalance() +
                         "\nChecking Account: " + checking.getBalance());
+                System.out.println("  - Transferred $" + moneyChange + " into " + currentAccount.getName());
                 System.out.println("  - Action was successful");
             } else {
-                System.out.println("You do not have enough money in your account to withdraw that amount");
                 System.out.println("Savings Account: " + savings.getBalance() +
                         "\nChecking Account: " + checking.getBalance());
+                System.out.println("  - You do not have enough money in your account to withdraw $" + moneyChange);
             }
 
         } else if (receipt == 5) {
             System.out.println("  - Changed PIN. The new PIN is " + customer.getPin() + ".");
             System.out.println("  - Action was successful.");
         }
-        System.out.println("----------\n");
+        System.out.println("--------------------\n");
         successfulAction = true;
         returnMenu();
 
@@ -247,7 +243,7 @@ private void withdrawMoneyy() {
                 choice = scan.nextLine();
                 choice = choice.toLowerCase();
             } else {
-                System.out.println("That isn't an option. Please try again.");
+                System.out.println("That is an invalid option. Please try again.");
                 System.out.print("Would you like to do anything else: ");
                 choice = scan.nextLine();
                 choice = choice.toLowerCase();
@@ -258,7 +254,7 @@ private void withdrawMoneyy() {
             System.out.println("Returning to menu");
             menu();
         } else if (choice.equals("no")) {
-            System.out.println("Thank you for being a customer at New York Bank. Come again!");
+            System.out.println("Thank you for being a customer at New York Bank" + customer.getName() + ". Come again!");
         }
     }
 
@@ -270,10 +266,10 @@ private void withdrawMoneyy() {
         }
         if (choice == 1) {
             currentAccount = savings;
-            System.out.println("FROM: Savings Account \nTO: Checking Account");
+            System.out.println("You chose the Savings Account");
         } else {
             currentAccount = checking;
-            System.out.println("FROM: Checking Account \nTO: Savings Account");
+            System.out.println("You chose the Checking Account");
         }
     }
 

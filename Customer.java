@@ -11,6 +11,10 @@ public class Customer {
         return pin;
     }
 
+    public String getName() {
+        return name;
+    }
+
     public void setPin(int newPin) {
         pin = newPin;
     }
