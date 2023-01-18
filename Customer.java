@@ -7,6 +7,7 @@ public class Customer {
         this.pin = pin;
     }
 
+    //Setter methods
     public int getPin() {
         return pin;
     }
@@ -15,6 +16,7 @@ public class Customer {
         return name;
     }
 
+    //Getter methods
     public void setPin(int newPin) {
         pin = newPin;
     }
