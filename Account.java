@@ -7,6 +7,7 @@ public class Account {
         balance = 200;
     }
 
+    //Getter methods
     public double getBalance() {
         return balance;
     }
@@ -15,6 +16,7 @@ public class Account {
         return name;
     }
 
+    //Methods used to change the account's balance.
     public void addBalance(double money) {
         balance +=money;
     }
