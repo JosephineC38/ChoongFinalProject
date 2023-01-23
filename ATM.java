@@ -1,5 +1,7 @@
 import java.util.Scanner;
 public class ATM {
+
+    //Creating the objects used
     Scanner scan = new Scanner(System.in);
     Customer customer = new Customer();
     Account checking = new Account("checking");
@@ -24,8 +26,6 @@ public class ATM {
         id = 10000;
         receipt = 0;
         successfulAction = true;
-
-
     }
 
 
@@ -58,7 +58,7 @@ public class ATM {
     }
 
     /**
-     * A helper method used in start().
+     * A helper method used in start() to print the bank's functions.
      * Requires the correct PIN before allowing the user to pick a choice.
      */
     private void menu() {
@@ -357,7 +357,7 @@ private void withdrawMoney() {
     }
 
     /**
-     * A helper method that gives the user the choice to go back to the main menu.
+     * A helper method that gives the user the choice to go back to the main menu. Used in printReceipt().
      */
     private void returnMenu() {
         System.out.print("Would you like to do anything else: ");
@@ -376,7 +376,7 @@ private void withdrawMoney() {
 
         }
         if (choice.equals("yes")) {
-            System.out.println("Returning to menu");
+            System.out.println("Returning to menu.");
             menu();
         } else if (choice.equals("no")) {
             System.out.println("Thank you for being a customer at New York Bank" + customer.getName() + ". Come again!");
