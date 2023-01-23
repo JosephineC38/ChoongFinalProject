@@ -4,7 +4,7 @@ public class Account {
 
     public Account(String name) {
         this.name = name;
-        balance = 200;
+        balance = 0;
     }
 
     //Getter methods

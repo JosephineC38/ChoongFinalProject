@@ -4,25 +4,30 @@ public class ATM {
     Customer customer = new Customer();
     Account checking = new Account("checking");
     Account savings = new Account("savings");
-
     private String decision;
 
     //The id used for the receipt. Used only for successful actions in withdraw, deposit, or transfer.
     private int id;
+
+    //Used for printReceipt() and prints what changed in the account(s)'s balance(s).
     private double moneyChange;
+
+    //Used for the current account.
     private Account currentAccount;
 
     //Checks if an action (ex: withdraw) was successful or not. Based on the boolean, will print different text for the receipt.
     private boolean successfulAction;
 
-    //Used for printReceipt(). Based on the int, prints different text for the receipt.
+    //Used for printReceipt(). Based on the chose (ex: if they picked Choice 2. Deposit Money), prints different text for the receipt.
     private int receipt;
-
     public ATM () {
         id = 10000;
         receipt = 0;
         successfulAction = true;
+
+
     }
+
 
     /**
      * The only public method and it's used to run the program.
@@ -48,13 +53,13 @@ public class ATM {
             strPin = Integer.toString(pin);
         }
         customer.setPin(pin);
-        System.out.println("Thank you for creating an account.");
+        System.out.println("Thank you for creating an account. For security purposes, please re-enter your PIN.");
         menu();
     }
 
     /**
      * A helper method used in start().
-     * Requires the correct PIN before allowing the user to select their choices.
+     * Requires the correct PIN before allowing the user to pick a choice.
      */
     private void menu() {
         System.out.print("Enter your PIN: ");
@@ -114,42 +119,48 @@ public class ATM {
      */
 private void withdrawMoney() {
     receipt = 1;
-    System.out.print("\"(1) Savings \\n(2) Checking \\nChoose an account to withdraw from: ");
+    System.out.println("\nWITHDRAW \n----------");
+    System.out.print("(1) Savings \n(2) Checking \nChoose an account to withdraw from: ");
     chooseAccount();
 
     //Asking for the amount to withdraw. Will print the receipt if the withdrawal is over the account's balance.
-    System.out.println("You can only withdraw $5 and $20 bills");
+    System.out.println("You can only withdraw $5 and $20 bills.");
     System.out.print("How much would you like to withdraw: ");
     double withdraw = scan.nextDouble();
     moneyChange = withdraw;
-    while(withdraw % 5 != 0 || currentAccount.getBalance() - withdraw < 0) {
+    while( (withdraw % 5 != 0) || (currentAccount.getBalance() - withdraw < 0)) {
         if(withdraw % 5 != 0) {
             System.out.println("Invalid amount. Please only withdraw a multiple of 5.");
             System.out.print("How much would you like to withdraw: ");
             withdraw = scan.nextDouble();
-        } else {
+        } else if (currentAccount.getBalance() - withdraw < 0) {
             successfulAction = false;
             printReceipt();
         }
     }
     moneyChange = withdraw;
 
-    //Asking for the amount of $5 bills to withdraw.
-    System.out.print("Amount of $5 bills to withdraw: ");
-    int fiveBill = scan.nextInt();
-    while(withdraw - (fiveBill * 5) < 0) {
-        System.out.println("That goes over your withdrawal amount. Please pick a lower amount of $5 bills.");
-        System.out.print("Amount of $5 bills to withdraw: ");
-        fiveBill = scan.nextInt();
-    }
-
     //Asking for the amount of $20 bills to withdraw.
     System.out.print("Amount of $20 bills to withdraw: ");
     int twentyBill = scan.nextInt();
-    while(withdraw - (fiveBill * 5)  - (twentyBill * 20) < 0) {
+    while(withdraw  - (twentyBill * 20) < 0) {
         System.out.println("That goes over your withdrawal amount. Please pick a lower amount of $20 bills.");
         System.out.print("Amount of $20 bills to withdraw: ");
         twentyBill = scan.nextInt();
+    }
+
+    //Asking for the amount of $5 bills to withdraw.
+    System.out.print("Amount of $5 bills to withdraw: ");
+    int fiveBill = scan.nextInt();
+    while ((withdraw - (fiveBill * 5) - (twentyBill * 20) != 0)) {
+        if((withdraw - (fiveBill * 5) - (twentyBill * 20) < 0)) {
+            System.out.println("That goes over your withdrawal amount. Please pick a lower amount of $5 bills.");
+        } else {
+            System.out.println("You still have money to withdraw. Please pick a higher amount of $5 bills.");
+        }
+
+        System.out.print("Amount of $5 bills to withdraw: ");
+        fiveBill = scan.nextInt();
     }
 
     currentAccount.subtractBalance(withdraw);
@@ -162,8 +173,8 @@ private void withdrawMoney() {
      * Used to deposit an inputted amount from either account and makes an ID.
      */
    private void depositMoney() {
-     System.out.println("\nDEPOSIT \n----------");
      receipt = 2;
+     System.out.println("\nDEPOSIT \n----------");
      System.out.print("(1) Savings \n(2) Checking \nChoose an account to deposit from: ");
      chooseAccount();
      System.out.print("DEPOSIT: ");
@@ -180,13 +191,16 @@ private void withdrawMoney() {
      * The user will choose an account to transfer the money from. After inputting an amount, will change both accounts balances and makes an ID.
      */
    private void transferMoney() {
+     //Choosing an account to transfer from
      receipt = 3;
-     System.out.println("(1) Savings Account \n(2) Checking Account \nChoose an account to transfer from:");
+     System.out.println("\nTRANSFER \n----------");
+     System.out.println("(1) Savings Account \n(2) Checking Account \nChoose an account to transfer from.");
      System.out.print("FROM: ");
      chooseAccount();
 
+     //Choosing an account to transfer to
      Account secondAccount = currentAccount;
-     System.out.println("(1) Savings Account \n(2) Checking Account \nChoose an account to transfer to:");
+     System.out.println("(1) Savings Account \n(2) Checking Account \nChoose an account to transfer to.");
      System.out.print("TO: ");
      int choice = scan.nextInt();
      while((choice == 1 && secondAccount == savings) || (choice == 2 && secondAccount == checking)){
@@ -209,6 +223,7 @@ private void withdrawMoney() {
            System.out.println("You chose the Checking Account.");
        }
 
+     //Choosing the amount to transfer
      System.out.print("Enter the amount of money you would like transfer: ");
      double transfer = scan.nextDouble();
      if (currentAccount.getBalance() - transfer < 0) {
@@ -279,10 +294,10 @@ private void withdrawMoney() {
             if(successfulAction) {
                 System.out.println("Account Transaction: " + id);
             }
-            if(currentAccount.getName().equals(savings)) {
-                System.out.println("Savings Account: " + savings.getBalance());
+            if(currentAccount.getName().equals("checking")) {
+                System.out.println("Checking Account: $" + checking.getBalance());
             } else {
-                System.out.println("Checking Account: " + checking.getBalance());
+                System.out.println("Savings Account: $" + savings.getBalance());
             }
 
             if(successfulAction) {
@@ -292,23 +307,30 @@ private void withdrawMoney() {
                 System.out.println("  - You do not have enough money in your account to withdraw $" + moneyChange);
             }
 
+        //Used for depositMoney(), Choice 2 "Deposit money".
+        //Will print the deposited account's balance.
         } else if (receipt ==  2) {
             System.out.println("Account Transaction: " + id);
-            if(currentAccount.getName().equals(checking)) {
+            if(currentAccount.getName().equals("checking")) {
                 System.out.println("Checking Account: $" + checking.getBalance());
-            } else  {
+            } else {
                 System.out.println("Savings Account: $" + savings.getBalance());
             }
             System.out.println("  - Deposited $" + moneyChange + " into " + currentAccount.getName());
             System.out.println("  - Action was successful");
 
-        //Used for transferMoney(), Choice 3 "Transfer money between accounts". Checks if the action was successful or not.
+        //Used for transferMoney(), Choice 3 "Transfer money between accounts".
+        //Checks if the action was successful or not and prints the account balances.
         } else if (receipt == 3) {
             System.out.println("Account Transaction: " + id);
             if (successfulAction) {
                 System.out.println("Savings Account: " + savings.getBalance() +
                         "\nChecking Account: " + checking.getBalance());
-                System.out.println("  - Transferred $" + moneyChange + " into " + currentAccount.getName());
+                if(currentAccount.getName().equals("checking")) {
+                    System.out.println("  - Transferred $" + moneyChange + " into savings");
+                } else {
+                    System.out.println("  - Transferred $" + moneyChange + " into checking");
+                }
                 System.out.println("  - Action was successful");
             } else {
                 System.out.println("Savings Account: " + savings.getBalance() +
@@ -321,6 +343,7 @@ private void withdrawMoney() {
             System.out.println("  - Checked savings and checking accounts balances.");
             System.out.println("  - Action was successful.");
 
+        //Used for changePin(), Choice 5 "Change PIN".
         } else if (receipt == 5) {
             System.out.println("  - Changed PIN. The new PIN is " + customer.getPin() + ".");
             System.out.println("  - Action was successful.");
@@ -361,7 +384,7 @@ private void withdrawMoney() {
     }
 
     /**
-     * A helper method that allows the user pick an account.
+     * A helper method that allows the user pick an account. Used in withdrawMoney(),depositMoney() and transferMoney().
      */
     private void chooseAccount() {
         int choice = scan.nextInt();
