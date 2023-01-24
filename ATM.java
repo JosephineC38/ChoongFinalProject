@@ -6,6 +6,8 @@ public class ATM {
     Customer customer = new Customer();
     Account checking = new Account("checking");
     Account savings = new Account("savings");
+
+    //Used to make decision for various classes
     private String decision;
 
     //The id used for the receipt. Used only for successful actions in withdraw, deposit, or transfer.
